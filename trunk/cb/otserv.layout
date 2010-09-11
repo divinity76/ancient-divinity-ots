@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_layout_file>
+	<ActiveTarget name="Debug Unix" />
+	<File name="../actions.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="1927" topLine="48" />
+	</File>
+	<File name="../ban.cpp" open="1" top="1" tabpos="1">
+		<Cursor position="9215" topLine="359" />
+	</File>
+	<File name="../ban.h" open="1" top="0" tabpos="2">
+		<Cursor position="2996" topLine="73" />
+	</File>
+	<File name="../combat.h" open="1" top="0" tabpos="3">
+		<Cursor position="10922" topLine="352" />
+	</File>
+	<File name="../weapons.h" open="0" top="0" tabpos="0">
+		<Cursor position="777" topLine="0" />
+	</File>
+</CodeBlocks_layout_file>
