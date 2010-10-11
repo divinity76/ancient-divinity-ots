@@ -514,8 +514,8 @@ public:
 		{if(client) client->sendTextWindow(windowTextId, itemId, text);}
 	void sendToChannel(Creature* creature, SpeakClasses type, const std::string& text, uint16_t channelId, uint32_t time = 0) const
 		{if(client) client->sendToChannel(creature, type, text, channelId, time);}
-	
-	
+
+
 	void sendTradeItemRequest(const Player* player, const Item* item, bool ack) const
 		{if(client) client->sendTradeItemRequest(player, item, ack);}
 	void sendTradeClose() const
@@ -554,7 +554,7 @@ public:
 
 	House* getEditHouse(uint32_t& _windowTextId, uint32_t& _listId);
 	void setEditHouse(House* house, uint32_t listId = 0);
-	
+
 	void setNextAction(int64_t time) {if(time > nextAction) {nextAction = time;}}
 	bool canDoAction() const {return nextAction <= OTSYS_TIME();}
 	uint32_t getNextActionTime() const;
@@ -591,7 +591,7 @@ protected:
 	void setNextWalkTask(SchedulerTask* task);
 	void setNextActionTask(SchedulerTask* task);
 
-	void sendToRook();  
+	void sendToRook();
 	void die();
 	virtual void dropCorpse();
 	virtual Item* getCorpse();
@@ -706,7 +706,7 @@ protected:
 	Player* tradePartner;
 	tradestate_t tradeState;
 	Item* tradeItem;
-	
+
 
 	//party variables
 	Party* party;
@@ -751,7 +751,7 @@ protected:
 		else if(getSpeed() < PLAYER_MIN_SPEED){
 			return PLAYER_MIN_SPEED;
 		}
-		
+
 		return getSpeed();
 	}
 	void updateBaseSpeed()
