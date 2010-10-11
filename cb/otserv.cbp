@@ -2,10 +2,11 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="otserv" />
+		<Option title="otserv avesta uncompilable" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
+			<Script file="lib_finder.script" />
 			<Target title="Debug Windows">
 				<Option platforms="Windows;" />
 				<Option output="../otserv" prefix_auto="1" extension_auto="1" />
@@ -153,6 +154,7 @@
 		<Unit filename="../connection.cpp" />
 		<Unit filename="../connection.h" />
 		<Unit filename="../const.h" />
+		<Unit filename="../const76.h" />
 		<Unit filename="../container.cpp" />
 		<Unit filename="../container.h" />
 		<Unit filename="../creature.cpp" />
@@ -163,10 +165,7 @@
 		<Unit filename="../cylinder.h" />
 		<Unit filename="../database.cpp" />
 		<Unit filename="../database.h" />
-		<Unit filename="../databasemysql.cpp">
-			<Option target="Debug Windows" />
-			<Option target="Release Windows" />
-		</Unit>
+		<Unit filename="../databasemysql.cpp" />
 		<Unit filename="../databasemysql.h" />
 		<Unit filename="../databaseodbc.cpp" />
 		<Unit filename="../databaseodbc.h" />
@@ -226,6 +225,7 @@
 		<Unit filename="../networkmessage.h" />
 		<Unit filename="../npc.cpp" />
 		<Unit filename="../npc.h" />
+		<Unit filename="../otpch.cpp" />
 		<Unit filename="../otpch.h" />
 		<Unit filename="../otserv.cpp" />
 		<Unit filename="../otserv.ico" />
@@ -244,6 +244,8 @@
 		<Unit filename="../position.h" />
 		<Unit filename="../protocol.cpp" />
 		<Unit filename="../protocol.h" />
+		<Unit filename="../protocol76.cpp" />
+		<Unit filename="../protocol76.h" />
 		<Unit filename="../protocolgame.cpp" />
 		<Unit filename="../protocolgame.h" />
 		<Unit filename="../protocollogin.cpp" />
@@ -291,6 +293,7 @@
 		<Unit filename="../vocation.h" />
 		<Unit filename="../waitlist.cpp" />
 		<Unit filename="../waitlist.h" />
+		<Unit filename="../waypoints.h" />
 		<Unit filename="../weapons.cpp" />
 		<Unit filename="../weapons.h" />
 		<Extensions>

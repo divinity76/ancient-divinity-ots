@@ -19,7 +19,7 @@
 //////////////////////////////////////////////////////////////////////
 #include "otpch.h"
 
-#include "Protocol76.h"
+#include "protocol76.h"
 
 #include "networkmessage.h"
 #include "outputmessage.h"
@@ -65,7 +65,7 @@ uint32_t Protocol76::protocol76Count = 0;
 #else
 #define ADD_TASK_INTERVAL -1
 #endif
-	
+
 // Helping templates to add dispatcher tasks
 template<class T1, class f1, class r>
 void Protocol76::addGameTask(r (Game::*f)(f1), T1 p1)
@@ -284,7 +284,7 @@ bool Protocol76::login(const std::string& name)
 			disconnectClient(0x14, "Your character has been name locked.");
 			return false;
 		}
-		
+
 		if(g_game.getGameState() == GAME_STATE_CLOSING && !player->hasFlag(PlayerFlag_CanAlwaysLogin)){
             disconnectClient(0x14, "The game is just going down.\nPlease try again later.");
             return false;
@@ -300,7 +300,7 @@ bool Protocol76::login(const std::string& name)
             disconnectClient(0x14, "You may only login with one character per account.");
             return false;
         }
-        
+
         if(!WaitingList::getInstance()->clientLogin(player)){
 			int32_t currentSlot = WaitingList::getInstance()->getClientSlot(player);
 			int32_t retryTime = WaitingList::getTime(currentSlot);
@@ -320,7 +320,7 @@ bool Protocol76::login(const std::string& name)
 			getConnection()->closeConnection();
 			return false;
 		}
-		
+
 		if(!IOPlayer::instance()->loadPlayer(player, name)){
 #ifdef __DEBUG__
             std::cout << "Protocol76::login - loadPlayer failed - " << name << std::endl;
@@ -328,7 +328,7 @@ bool Protocol76::login(const std::string& name)
 	        disconnectClient(0x14, "Your character could not be loaded.");
             return false;
         }
-        	
+
 		if(!g_game.placeCreature(player, player->getLoginPosition())){
 			if(!g_game.placeCreature(player, player->getTemplePosition(), false, true)){
 				disconnectClient(0x14, "Temple position is wrong. Contact the administrator.");
@@ -434,44 +434,44 @@ bool Protocol76::parseFirstPacket(NetworkMessage& msg)
 
 	/*uint16_t clientos =*/ msg.GetU16();
 	uint16_t version  = msg.GetU16();
-	
+
 	/*uint8_t isSetGM =*/ msg.GetByte();
 	uint32_t accnumber = msg.GetU32();
 	const std::string name = msg.GetString();
 	const std::string password = msg.GetString();
-	
+
 	if(version < CLIENT_VERSION_MIN || version > CLIENT_VERSION_MAX){
 		disconnectClient(0x0A, STRING_CLIENT_VERSION);
 		return false;
 	}
-	
+
 	if(g_game.getGameState() == GAME_STATE_STARTUP){
 		disconnectClient(0x14, "Gameworld is starting up. Please wait.");
 		return false;
 	}
-	
+
 	if(g_bans.isDeleted(accnumber)){
         disconnectClient(0x14, "Your account has been deleted!");
         return false;
     }
-	
+
 	if(g_bans.isIpDisabled(getIP())){
 		disconnectClient(0x14, "Too many connections attempts from this IP. Try again later.");
 		return false;
 	}
-	
+
 	if(g_bans.isIpBanished(getIP())){
 		disconnectClient(0x14, "Your IP is banished!");
 		return false;
 	}
-	
+
 	std::string acc_pass;
 	if(!(IOAccount::instance()->getPassword(accnumber, name, acc_pass) && passwordTest(password,acc_pass))){
 		g_bans.addLoginAttempt(getIP(), false);
 		getConnection()->closeConnection();
 		return false;
 	}
-	
+
 	g_bans.addLoginAttempt(getIP(), true);
 	Dispatcher::getDispatcher().addTask(
 		createTask(boost::bind(&Protocol76::login, this, name)));
@@ -672,7 +672,7 @@ void Protocol76::parsePacket(NetworkMessage &msg)
 	case 0x9A: // open priv
 		parseOpenPriv(msg);
 		break;
-	
+
 	case 0x9B: //process report
 		parseProcessRuleViolation(msg);
 		break;
@@ -696,7 +696,7 @@ void Protocol76::parsePacket(NetworkMessage &msg)
 	case 0xA2: //follow
 		parseFollow(msg);
 		break;
-		
+
 	case 0xA3:
         parseInviteToParty(msg);
         break;
@@ -704,15 +704,15 @@ void Protocol76::parsePacket(NetworkMessage &msg)
     case 0xA4:
         parseJoinParty(msg);
         break;
-    
+
     case 0xA5:
         parseRevokePartyInvitation(msg);
         break;
-    
+
     case 0xA6:
         parsePassPartyLeadership(msg);
         break;
-        
+
     case 0xA7:
         parseLeaveParty(msg);
         break;
@@ -720,7 +720,7 @@ void Protocol76::parsePacket(NetworkMessage &msg)
 	case 0xAA:
 		parseCreatePrivateChannel(msg);
 		break;
-		
+
 	case 0xAB:
 		parseChannelInvite(msg);
 		break;
@@ -764,7 +764,7 @@ void Protocol76::parsePacket(NetworkMessage &msg)
 	case 0xE7:
 		parseViolationWindow(msg);
 		break;
-		
+
 	case 0xE8:
         parseDebugAssert(msg);
         break;
@@ -992,14 +992,14 @@ void Protocol76::parseCreatePrivateChannel(NetworkMessage& msg)
 void Protocol76::parseChannelInvite(NetworkMessage& msg)
 {
 	const std::string name = msg.GetString();
-	
+
 	addGameTask(&Game::playerChannelInvite, player->getID(), name);
 }
 
 void Protocol76::parseChannelExclude(NetworkMessage& msg)
 {
 	const std::string name = msg.GetString();
-	
+
 	addGameTask(&Game::playerChannelExclude, player->getID(), name);
 }
 
@@ -1011,7 +1011,7 @@ void Protocol76::parseGetChannels(NetworkMessage& msg)
 void Protocol76::parseOpenChannel(NetworkMessage& msg)
 {
 	uint16_t channelId = msg.GetU16();
-	
+
 	addGameTask(&Game::playerOpenChannel, player->getID(), channelId);
 }
 
@@ -1073,7 +1073,7 @@ void Protocol76::parseRecievePing(NetworkMessage& msg)
 	if(m_now > m_nextPing){
         Dispatcher::getDispatcher().addTask(
             createTask(boost::bind(&Game::playerReceivePing, &g_game, player->getID())));
-        
+
         m_nextPing = m_now + 2000;
     }
 }
@@ -1137,7 +1137,7 @@ void Protocol76::parseSetOutfit(NetworkMessage& msg)
 {
 	uint8_t lookType = msg.GetByte();
 	Outfit_t newOutfit;
-	
+
 	// only first 4 outfits
 	uint8_t lastFemaleOutfit = 0x8B;
 	uint8_t lastMaleOutfit = 0x83;
@@ -1147,7 +1147,7 @@ void Protocol76::parseSetOutfit(NetworkMessage& msg)
 		lastFemaleOutfit = 0x8E;
 	else if (player->getSex() == PLAYERSEX_MALE && player->isPremium())
 		lastMaleOutfit = 0x86;
-	
+
 	if ((player->getSex() == PLAYERSEX_FEMALE && lookType >= PLAYER_FEMALE_1 && lookType <= lastFemaleOutfit)
 		|| (player->getSex() == PLAYERSEX_MALE && lookType >= PLAYER_MALE_1 && lookType <= lastMaleOutfit))
 	{
@@ -1157,7 +1157,7 @@ void Protocol76::parseSetOutfit(NetworkMessage& msg)
 		newOutfit.lookLegs = msg.GetByte();
 		newOutfit.lookFeet = msg.GetByte();
 	}
-    
+
     addGameTask(&Game::playerChangeOutfit, player->getID(), newOutfit);
 }
 
@@ -1202,28 +1202,28 @@ void Protocol76::parseBattleWindow(NetworkMessage &msg)
 void Protocol76::parseCloseContainer(NetworkMessage& msg)
 {
 	uint8_t cid = msg.GetByte();
-	
+
 	addGameTask(&Game::playerCloseContainer, player->getID(), cid);
 }
 
 void Protocol76::parseUpArrowContainer(NetworkMessage& msg)
 {
 	uint8_t cid = msg.GetByte();
-	
+
 	addGameTask(&Game::playerMoveUpContainer, player->getID(), cid);
 }
 
 void Protocol76::parseUpdateTile(NetworkMessage& msg)
 {
     Position pos = msg.GetPosition();
-    
+
     //addGameTask(&Game::playerUpdateTile, player->getID(), pos);
 }
 
 void Protocol76::parseUpdateContainer(NetworkMessage& msg)
 {
 	uint8_t cid = msg.GetByte();
-	
+
 	addGameTask(&Game::playerUpdateContainer, player->getID(), cid);
 }
 
@@ -1269,7 +1269,7 @@ void Protocol76::parseSay(NetworkMessage& msg)
 
 	std::string receiver;
 	uint16_t channelId = 0;
-	
+
 	switch(type){
         case SPEAK_PRIVATE:
         case SPEAK_PRIVATE_RED:
@@ -1284,9 +1284,9 @@ void Protocol76::parseSay(NetworkMessage& msg)
         default:
             break;
     }
-	
+
 	const std::string text = msg.GetString();
-	
+
 	addGameTask(&Game::playerSay, player->getID(), channelId, type, receiver, text);
 }
 
@@ -1324,13 +1324,13 @@ void Protocol76::parseFightModes(NetworkMessage& msg)
 void Protocol76::parseAttack(NetworkMessage& msg)
 {
 	uint32_t creatureId = msg.GetU32();
-	
+
 	addGameTask(&Game::playerSetAttackedCreature, player->getID(), creatureId);
 }
 
 void Protocol76::parseFollow(NetworkMessage& msg)
 {
-    uint32_t creatureId = msg.GetU32(); 
+    uint32_t creatureId = msg.GetU32();
 
 	addGameTask(&Game::playerFollowCreature, player->getID(), creatureId);
 }
@@ -1338,28 +1338,28 @@ void Protocol76::parseFollow(NetworkMessage& msg)
 void Protocol76::parseInviteToParty(NetworkMessage& msg)
 {
     uint32_t creatureId = msg.GetU32();
-    
+
     addGameTask(&Game::playerInviteToParty, player->getID(), creatureId);
 }
 
 void Protocol76::parseJoinParty(NetworkMessage& msg)
 {
     uint32_t creatureId = msg.GetU32();
-    
+
     addGameTask(&Game::playerJoinParty, player->getID(), creatureId);
 }
 
 void Protocol76::parseRevokePartyInvitation(NetworkMessage& msg)
 {
     uint32_t creatureId = msg.GetU32();
-    
+
     addGameTask(&Game::playerRevokePartyInvitation, player->getID(), creatureId);
 }
 
 void Protocol76::parsePassPartyLeadership(NetworkMessage& msg)
 {
     uint32_t creatureId = msg.GetU32();
-    
+
     addGameTask(&Game::playerPassPartyLeadership, player->getID(), creatureId);
 }
 
@@ -1372,7 +1372,7 @@ void Protocol76::parseTextWindow(NetworkMessage& msg)
 {
 	uint32_t windowTextId = msg.GetU32();
 	const std::string newText = msg.GetString();
-	
+
 	addGameTask(&Game::playerWriteItem, player->getID(), windowTextId, newText);
 }
 
@@ -1381,7 +1381,7 @@ void Protocol76::parseHouseWindow(NetworkMessage &msg)
 	uint8_t doorId = msg.GetByte();
 	uint32_t id = msg.GetU32();
 	const std::string text = msg.GetString();
-	
+
 	addGameTask(&Game::playerUpdateHouseWindow, player->getID(), doorId, id, text);
 }
 
@@ -1425,7 +1425,7 @@ void Protocol76::parseAddVip(NetworkMessage& msg)
 void Protocol76::parseRemoveVip(NetworkMessage& msg)
 {
 	uint32_t guid = msg.GetU32();
-	
+
 	addGameTask(&Game::playerRequestRemoveVip, player->getID(), guid);
 }
 
@@ -1452,7 +1452,7 @@ void Protocol76::parseViolationWindow(NetworkMessage &msg)
 	std::string comment = msg.GetString();
 	int32_t action = msg.GetByte();
 	bool IPBanishment = (msg.GetByte() == 0x01);
-	
+
 	addGameTask(&Game::violationWindow, player->getID(), name, reason, comment, action, IPBanishment);
 }
 
@@ -1461,19 +1461,19 @@ void Protocol76::parseDebugAssert(NetworkMessage& msg)
     if(!g_config.getNumber(ConfigManager::SAVE_CLIENT_DEBUG_ASSERTIONS)){
         return;
     }
-    
+
     //only accept 1 report each time
     if(m_debugAssertSent){
         return;
     }
-    
+
     m_debugAssertSent = true;
-    
+
     std::string assertLine = msg.GetString();
     std::string date = msg.GetString();
     std::string description = msg.GetString();
     std::string comment = msg.GetString();
-    
+
     //write it in the assertions file
     FILE* f = fopen("client_assertions.txt", "a");
     char bufferDate[32], bufferIp[32];
@@ -2114,7 +2114,7 @@ void Protocol76::sendAddCreature(const Creature* creature, bool isLogin)
 void Protocol76::sendRemoveCreature(const Creature* creature, const Position& pos, uint32_t stackpos, bool isLogout)
 {
 #ifdef __PB_GMINVISIBLE__
-	if(!(creature->isGmInvis() && !player->canSeeGmInvis(creature)) && 
+	if(!(creature->isGmInvis() && !player->canSeeGmInvis(creature)) &&
 		canSee(pos)){
 #else
 	if(canSee(pos)){
